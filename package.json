@@ -28,7 +28,9 @@
     "version": "thoughtful changelog -o -a && npm run thought",
     "preversion": "npm run thoughtcheck"
   },
-  "dependencies": {},
+  "dependencies": {
+    "express": "^4.13.4"
+  },
   "devDependencies": {
     "ghooks": "^1.0.3",
     "mocha": "^2.3.3",
@@ -49,5 +51,10 @@
       "pre-commit": "standard"
     }
   },
-  "keywords": [ "image", "video", "transcode", "resize" ]
+  "keywords": [
+    "image",
+    "video",
+    "transcode",
+    "resize"
+  ]
 }
