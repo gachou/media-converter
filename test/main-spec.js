@@ -5,10 +5,7 @@
  * Released under the MIT license.
  */
 
-/* global describe */
-// /* global it */
-// /* global xdescribe */
-// /* global xit */
+/* global describe it before after*/
 
 'use strict'
 
@@ -19,22 +16,22 @@ var request = require('request')
 var storage = require('./mock-storage.js')
 var MediaConverter = require('../')
 
-var tmp = path.resolve(__dirname, '..', 'test-output','main-spec')
+var tmp = path.resolve(__dirname, '..', 'test-output', 'main-spec')
 var converter = new MediaConverter({
-  host: '127.0.0.1',       // optional, defaults to any interface
+  host: '127.0.0.1',
   port: 0
 })
 
 describe('media-converter:', function () {
   before(() => {
     return qfs.removeTree(tmp)
-      .catch(() => {})
+      .catch(() => {
+      })
       .then(() => qfs.makeTree(tmp))
-
   })
   before((done) => storage.start(function () {
     console.log('Mock server address', storage._socket.address())
-    done();
+    done()
   }))
   after(() => storage.stop())
 
@@ -45,16 +42,20 @@ describe('media-converter:', function () {
   })
   after(() => converter.stop())
 
-  it("should", function (done) {
-    var converterPort = converter.address().port;
-    var storageUrl = `http://localhost:${storage._socket.address().port}/autumn.jpg`;
-    var converterUrl = `http://localhost:${converterPort}/thumbnail/200x200?source=${encodeURIComponent(storageUrl)}`;
-    console.log("Call converter at ",converterUrl)
-      request(converterUrl, function(err,res,body) {
-        console.log(body);
-        done()
-      })
-        //.pipe(fs.createWriteStream(path.join(tmp,'autumn-200x200.jpg')))
-        //.on('finish',done)
+  it('should', function (done) {
+    var converterPort = converter.address().port
+    var storageUrl = `http://localhost:${storage._socket.address().port}/autumn.jpg`
+    var converterUrl = `http://localhost:${converterPort}`
+    console.log('Call converter at ', converterUrl)
+    request(converterUrl, {
+      qs: {
+        source: storageUrl,
+        size: '200x200',
+        format: 'jpg'
+      }
+    })
+      .on('response', (res) => console.log('Received response from converter ', res.statusCode))
+      .pipe(fs.createWriteStream(path.join(tmp, 'autumn-200x200.jpg')))
+      .on('finish', done)
   })
 })

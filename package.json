@@ -30,13 +30,13 @@
   },
   "dependencies": {
     "express": "^4.13.4",
-    "q": "^1.4.1"
+    "q": "^1.4.1",
+    "request": "^2.69.0"
   },
   "devDependencies": {
     "ghooks": "^1.0.3",
     "mocha": "^2.3.3",
     "q-io": "^1.13.2",
-    "request": "^2.69.0",
     "static-server": "^2.0.2",
     "thoughtful-release": "^0.3.0"
   },

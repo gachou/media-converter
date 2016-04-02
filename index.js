@@ -8,6 +8,7 @@
 'use strict'
 
 var Q = require('q')
+var request = require('request')
 
 module.exports = MediaConverter
 /**
@@ -26,33 +27,36 @@ function MediaConverter (options) {
    * @param next
      */
   this.middleware = function () {
-    return function middleware (req, res) {
-      res.ok('Dummy')
+    return function middleware (req, res, next) {
+      console.log('Receieved query', req.query)
+      // For now (dummy implementation), just download the image from the url
+      // and return it as-is
+      request(req.query.source).pipe(res)
     }
   }
 
   /**
    * Start a converter
    */
-  this.start = function start() {
+  this.start = function start () {
     var express = require('express')
     var app = express()
     var defer = Q.defer()
 
-    app.use(this.middleware)
+    app.use(this.middleware())
 
     server = app.listen(options.port, options.host, function (err) {
       if (err) {
         return defer.reject(err)
       }
       return defer.resolve({
-        address: this.address()
+        address: _this.address()
       })
     })
     return defer.promise
   }
 
-  this.address = function() {
+  this.address = function () {
     return server.address()
   }
 
