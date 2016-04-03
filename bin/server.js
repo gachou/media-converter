@@ -25,13 +25,13 @@ if (!argv.bind) {
 var app = express()
 
 app.use(bodyParser.json());
-app.post('/convert', function(req,res) {
-  res.setHeader('Content-type',req.body.targetType)
-  convert(req.body).pipe(res);
+app.get('/convert', function(req,res) {
+  res.setHeader('Content-type',req.query.targetType)
+  convert(req.query).pipe(res);
 })
 
 
-var hostPort = argv.bind.split(':')
+var hostPort = String(argv.bind).split(':')
 var host = hostPort[0]
 var port = hostPort[1]
 if (!port) {
