@@ -16,7 +16,8 @@ for details
 [ ] Document interface
 [ ] Implement the actual scaling and conversion
 [ ] Add option to specify a white-list pattern for valid urls
-
+[ ] Good error messages on invalid input data
+[ ] Testcases for express server
 
 # Installation
 

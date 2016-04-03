@@ -9,58 +9,32 @@
 
 var Q = require('q')
 var request = require('request')
+var im = require('imagemagick-stream')
+var formats = require('./lib/im-formats.js')
 
-module.exports = MediaConverter
+
+module.exports = convert;
+
 /**
- * A media-converter instance
- * @public
- * @class
+ * Conversion method, accessible via javascript.
+ * @param {object} options
+ * @param {string} options.size the target size specification (i.e. 200x200)
+ * @param {boolean} options.thumbnail whether the target should be a thumbnail (see http://www.imagemagick.org/Usage/thumbnails/)
+ * @param {string} options.targetType the target mime-type. Default: image/jpeg
+ * @param {boolean=} options.autoOrient rotate images based on EXIF-rotation tags. Default: true
+ * @param {string} options.url the URL of the source image
+ * @returns {stream.Readable} a stream that converts the image data to the new format
  */
-function MediaConverter (options) {
-  var _this = this
-  var server
-
-  /**
-   * Express middleware that perform the conversion
-   * @param req
-   * @param res
-   * @param next
-     */
-  this.middleware = function () {
-    return function middleware (req, res, next) {
-      console.log('Receieved query', req.query)
-      // For now (dummy implementation), just download the image from the url
-      // and return it as-is
-      request(req.query.source).pipe(res)
-    }
+function convert(options) {
+  console.log("Convert Options",options)
+  var magick = im().autoOrient(options.autoOrient)
+  if (options.thumbnail) {
+    magick = magick.thumbnail(options.size)
+  } else {
+    magick = magick.resize(options.size)
   }
-
-  /**
-   * Start a converter
-   */
-  this.start = function start () {
-    var express = require('express')
-    var app = express()
-    var defer = Q.defer()
-
-    app.use(this.middleware())
-
-    server = app.listen(options.port, options.host, function (err) {
-      if (err) {
-        return defer.reject(err)
-      }
-      return defer.resolve({
-        address: _this.address()
-      })
-    })
-    return defer.promise
-  }
-
-  this.address = function () {
-    return server.address()
-  }
-
-  this.stop = function () {
-    return Q(server.close())
-  }
+  magick = magick.outputFormat(formats[options.targetType])
+  console.log("ImageMagick args",magick.args())
+  return request(options.url).pipe(magick);
 }
+

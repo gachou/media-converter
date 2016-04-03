@@ -14,13 +14,9 @@ var fs = require('fs')
 var qfs = require('q-io/fs')
 var request = require('request')
 var storage = require('./mock-storage.js')
-var MediaConverter = require('../')
+var convert = require('../')
 
 var tmp = path.resolve(__dirname, '..', 'test-output', 'main-spec')
-var converter = new MediaConverter({
-  host: '127.0.0.1',
-  port: 0
-})
 
 describe('media-converter:', function () {
   before(() => {
@@ -35,27 +31,47 @@ describe('media-converter:', function () {
   }))
   after(() => storage.stop())
 
-  before(() => {
-    return converter.start().then(() => {
-      return console.log('Converter started on ', converter.address())
-    })
-  })
-  after(() => converter.stop())
-
-  it('should', function (done) {
-    var converterPort = converter.address().port
+  it('should convert and resize to jpg', function (done) {
     var storageUrl = `http://localhost:${storage._socket.address().port}/autumn.jpg`
-    var converterUrl = `http://localhost:${converterPort}`
-    console.log('Call converter at ', converterUrl)
-    request(converterUrl, {
-      qs: {
-        source: storageUrl,
-        size: '200x200',
-        format: 'jpg'
-      }
+    convert({
+      url: storageUrl,
+      thumbnail: true,
+      targetType: 'image/jpeg',
+      autoOrient: true,
+      size: '100x100'
     })
-      .on('response', (res) => console.log('Received response from converter ', res.statusCode))
-      .pipe(fs.createWriteStream(path.join(tmp, 'autumn-200x200.jpg')))
+      .on('error', (e) => console.log("Error while converting in test",e))
+      .pipe(fs.createWriteStream(path.join(tmp, 'autumn-100x100.jpg')))
       .on('finish', done)
   })
+
+  it('should convert to png', function (done) {
+    var storageUrl = `http://localhost:${storage._socket.address().port}/autumn.jpg`
+    convert({
+      url: storageUrl,
+      thumbnail: true,
+      targetType: 'image/png',
+      autoOrient: true,
+      size: '100x100'
+    })
+      .on('error', (e) => console.log("Error while converting in test",e))
+      .pipe(fs.createWriteStream(path.join(tmp, 'autumn-100x100.png')))
+      .on('finish', done)
+  })
+
+  it('should convert to gif', function (done) {
+    var storageUrl = `http://localhost:${storage._socket.address().port}/autumn.jpg`
+    convert({
+      url: storageUrl,
+      thumbnail: true,
+      targetType: 'image/gif',
+      autoOrient: true,
+      size: '100x100'
+    })
+      .on('error', (e) => console.log("Error while converting in test",e))
+      .pipe(fs.createWriteStream(path.join(tmp, 'autumn-100x100.gif')))
+      .on('finish', done)
+  })
+
+
 })
