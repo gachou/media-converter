@@ -10,10 +10,9 @@
 
 var express = require('express')
 var convert = require('../')
-var bodyParser = require('body-parser');
+var bodyParser = require('body-parser')
 
-
-var argv = require('yargs').argv;
+var argv = require('yargs').argv
 
 console.log(argv)
 if (!argv.bind) {
@@ -21,29 +20,25 @@ if (!argv.bind) {
   process.exit(1)
 }
 
-
 var app = express()
 
-app.use(bodyParser.json());
-app.get('/convert', function(req,res) {
-  res.setHeader('Content-type',req.query.targetType)
-  convert(req.query).pipe(res);
+app.use(bodyParser.json())
+app.get('/convert', function (req, res) {
+  res.setHeader('Content-type', req.query.targetType)
+  convert(req.query).pipe(res)
 })
-
 
 var hostPort = String(argv.bind).split(':')
 var host = hostPort[0]
 var port = hostPort[1]
 if (!port) {
-   // Bind to 0.0.0.0 if the "bind" parameter contains not colon
+  // Bind to 0.0.0.0 if the "bind" parameter contains not colon
   port = hostPort[0]
   host = '0.0.0.0'
 }
 
-
-var server = app.listen(port, host, function (err) {
+app.listen(port, host, function (err) {
   if (err) {
     throw err
   }
 })
-

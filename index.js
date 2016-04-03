@@ -7,13 +7,11 @@
 
 'use strict'
 
-var Q = require('q')
 var request = require('request')
-var im = require('imagemagick-stream')
+var sharp = require('sharp')
 var formats = require('./lib/im-formats.js')
 
-
-module.exports = convert;
+module.exports = convert
 
 /**
  * Conversion method, accessible via javascript.
@@ -25,16 +23,17 @@ module.exports = convert;
  * @param {string} options.url the URL of the source image
  * @returns {stream.Readable} a stream that converts the image data to the new format
  */
-function convert(options) {
-  console.log("Convert Options",options)
-  var magick = im().autoOrient(options.autoOrient)
-  if (options.thumbnail) {
-    magick = magick.thumbnail(options.size)
-  } else {
-    magick = magick.resize(options.size)
+function convert (options) {
+  console.log('Convert Options', options)
+  var newSize = options.size.split('x').map(Number)
+  console.log('New size', newSize)
+  var sh = sharp()
+    .rotate()
+    .resize(newSize[0], newSize[1])
+    .max()
+    .toFormat(formats[options.targetType])
+  if (!options.thumbnail) {
+    sh = sh.withMetadata()
   }
-  magick = magick.outputFormat(formats[options.targetType])
-  console.log("ImageMagick args",magick.args())
-  return request(options.url).pipe(magick);
+  return request(options.url).pipe(sh)
 }
-
