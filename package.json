@@ -4,16 +4,16 @@
   "description": "A Rest-based converter for images and videos",
   "repository": {
     "type": "git",
-    "url": "git@github.com:warau-js/media-converter.git"
+    "url": "git@github.com:gachou/media-converter.git"
   },
-  "homepage": "https://github.com/warau-js/media-converter",
+  "homepage": "https://github.com/gachou/media-converter",
   "author": {
     "name": "Nils Knappmeier",
     "email": "npm@knappi.org",
     "url": "https://github.com/nknapp"
   },
   "bugs": {
-    "url": "https://github.com/warau-js/media-converter/issues"
+    "url": "https://github.com/gachou/media-converter/issues"
   },
   "main": "index.js",
   "license": "MIT",
